@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Yourself</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#f7f5f0;--text:#1a1a1a;--muted:#888;--accent:#3d6b4f;--accent-light:#e8f0eb;--border:#e0ddd6;--card:#ffffff;--radius:16px}
+    body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:60px 20px 80px}
+    header{text-align:center;margin-bottom:52px;animation:fadeUp 0.7s ease both}
+    header .eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:12px}
+    header h1{font-family:"DM Serif Display",serif;font-size:clamp(2.8rem,6vw,4.2rem);line-height:1.1;letter-spacing:-0.01em}
+    header h1 em{font-style:italic;color:var(--accent)}
+    header p{margin-top:14px;color:var(--muted);font-size:0.95rem;font-weight:300}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 40px;width:100%;max-width:520px;animation:fadeUp 0.7s ease 0.1s both}
+    .card h2{font-family:"DM Serif Display",serif;font-size:1.25rem;margin-bottom:20px}
+    .bday-row{display:flex;gap:10px;margin-bottom:18px}
+    .bday-row input{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-family:"DM Sans",sans-serif;font-size:0.95rem;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.2s}
+    .bday-row input:focus{border-color:var(--accent)}
+    .age-display{background:var(--accent-light);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;min-height:52px;margin-bottom:8px}
+    .age-display .age-label{font-size:0.8rem;color:var(--accent);font-weight:500}
+    .age-display .age-value{font-family:"DM Serif Display",serif;font-size:1.8rem;color:var(--accent);line-height:1}
+    .age-display .age-detail{font-size:0.78rem;color:var(--muted);margin-top:2px}
+    .age-placeholder{font-size:0.85rem;color:var(--muted)}
+    .divider{border:none;border-top:1px solid var(--border);margin:28px 0}
+    .section-label{font-size:0.78rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:500}
+    .section-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .section-btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:18px 20px;border:1px solid var(--border);border-radius:12px;background:var(--bg);cursor:pointer;text-decoration:none;color:var(--text);transition:border-color 0.2s,background 0.2s,transform 0.15s;position:relative;overflow:hidden}
+    .section-btn:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px)}
+    .section-btn .btn-icon{font-size:1.3rem;margin-bottom:4px}
+    .section-btn .btn-title{font-family:"DM Serif Display",serif;font-size:1.05rem;line-height:1.2}
+    .section-btn .btn-sub{font-size:0.72rem;color:var(--muted);font-weight:300}
+    .section-btn .arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:1rem;opacity:0;transition:opacity 0.2s}
+    .section-btn:hover .arrow{opacity:1}
+    footer{margin-top:48px;font-size:0.78rem;color:var(--muted);text-align:center;animation:fadeUp 0.7s ease 0.3s both}
+    .score-opt{width:52px;height:60px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:"DM Serif Display",serif;font-size:1.2rem;cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.1s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .score-opt:hover{border-color:var(--accent);background:var(--accent-light);transform:scale(1.06)}
+    .score-opt.selected{border-color:var(--accent);background:var(--accent);color:#fff}
+    .score-opt.selected span{color:rgba(255,255,255,0.8)}
+    .week-cell{border-radius:8px;padding:8px 6px;text-align:center;font-size:0.7rem;cursor:default;position:relative;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform 0.12s;border:1.5px solid transparent}
+    .week-cell.past{cursor:pointer}
+    .week-cell.past:hover{transform:scale(1.07);border-color:var(--accent);z-index:2}
+    .week-cell.current{border-color:var(--accent)!important}
+    .sem-label{font-size:0.72rem;font-weight:500;letter-spacing:0.05em;color:var(--accent);margin-bottom:8px;margin-top:16px}
+    .s1{background:#fde8e8!important}.s2{background:#fdf4e8!important}.s3{background:#fffbe8!important}.s4{background:#e8f4e8!important}.s5{background:#e8f0eb!important}
+    .exam-week{outline:2px solid #c0392b!important;outline-offset:-2px}
+    .exam-week::after{content:"EXAM";position:absolute;top:3px;right:3px;font-size:0.44rem;font-weight:700;letter-spacing:0.05em;background:#c0392b;color:#fff;border-radius:3px;padding:1px 3px;line-height:1.2}
+    .page{display:none}
+    .page.active{display:flex;flex-direction:column;align-items:center;width:100%}
+    .back-btn{align-self:flex-start;max-width:860px;width:100%;margin-bottom:20px}
+    .back-btn button{background:none;border:none;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:0.85rem;color:var(--accent);display:flex;align-items:center;gap:6px;padding:0}
+    .back-btn button:hover{text-decoration:underline}
+    .sub-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;width:100%;max-width:520px;text-align:center}
+    .sub-card .sub-icon{font-size:2.5rem;margin-bottom:16px}
+    .sub-card h2{font-family:"DM Serif Display",serif;font-size:2rem;margin-bottom:10px}
+    .sub-card p{color:var(--muted);font-size:0.9rem;line-height:1.6}
+    .sub-card .coming-soon{display:inline-block;margin-top:24px;background:var(--accent-light);color:var(--accent);border-radius:20px;padding:6px 16px;font-size:0.78rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase}
+    .hol-input{padding:5px 10px;border:1px solid var(--border);border-radius:7px;font-family:"DM Sans",sans-serif;font-size:0.78rem;background:var(--bg);color:var(--text);outline:none}
+    .hol-input:focus{border-color:#b08000}
+    .date-input-sm{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:"DM Sans",sans-serif;font-size:0.85rem;background:var(--bg);color:var(--text);outline:none}
+    .date-input-sm:focus{border-color:var(--accent)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+
+<!-- MAIN PAGE -->
+<div id="mainPage" class="page active">
+  <header>
+    <p class="eyebrow">Your Journey</p>
+    <h1>Project <em>Yourself</em></h1>
+    <p>Design the life you want, one milestone at a time.</p>
+  </header>
+  <div class="card">
+    <h2>How old are you?</h2>
+    <div class="bday-row">
+      <input type="date" id="birthdayInput" max=""/>
+    </div>
+    <div class="age-display" id="ageDisplay">
+      <span class="age-placeholder">Enter your birthday above to see your age</span>
+    </div>
+    <hr class="divider"/>
+    <p class="section-label">Choose a section to plan</p>
+    <div class="section-grid">
+      <a class="section-btn" onclick="showPage('ugPage')">
+        <span class="btn-icon">&#127891;</span>
+        <span class="btn-title">UG</span>
+        <span class="btn-sub">Undergraduate</span>
+        <span class="arrow">&#8594;</span>
+      </a>
+      <a class="section-btn" onclick="showPage('pgPage')">
+        <span class="btn-icon">&#128218;</span>
+        <span class="btn-title">PG</span>
+        <span class="btn-sub">Postgraduate</span>
+        <span class="arrow">&#8594;</span>
+      </a>
+      <a class="section-btn" onclick="showPage('phdPage')">
+        <span class="btn-icon">&#128300;</span>
+        <span class="btn-title">PhD</span>
+        <span class="btn-sub">Doctorate</span>
+        <span class="arrow">&#8594;</span>
+      </a>
+      <a class="section-btn" onclick="showPage('personalPage')">
+        <span class="btn-icon">&#127807;</span>
+        <span class="btn-title">Personal</span>
+        <span class="btn-sub">Life goals</span>
+        <span class="arrow">&#8594;</span>
+      </a>
+    </div>
+  </div>
+  <footer>Built for growth &middot; One plan at a time</footer>
+</div>
+
+<!-- UG PAGE -->
+<div id="ugPage" class="page">
+  <div style="width:100%;max-width:860px;">
+    <div class="back-btn"><button onclick="showPage('mainPage')">&#8592; Back to Home</button></div>
+    <div style="text-align:center;margin-bottom:36px;">
+      <p class="eyebrow">Undergraduate</p>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;">UG Life <em style="font-style:italic;color:var(--accent)">Tracker</em></h1>
+      <p style="color:var(--muted);font-size:0.9rem;margin-top:10px;line-height:1.6;">Enter the first day of your UG.<br>Score each past week honestly.<br><em>No one is watching. The record is yours alone.</em></p>
+    </div>
+
+    <!-- Setup Card -->
+    <div class="card" style="max-width:860px;margin-bottom:20px;">
+      <h2 style="margin-bottom:16px;">First day of your UG</h2>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">All 9 semesters are auto-calculated. Set holiday periods per semester in the calendar below.</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="date" id="ugStartDate" style="padding:11px 16px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;background:var(--bg);color:var(--text);outline:none;flex:1;min-width:160px;"/>
+        <button onclick="buildCalendar()" style="padding:11px 24px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;cursor:pointer;white-space:nowrap;">Build my calendar &#8594;</button>
+        <span id="syncStatus" style="font-size:0.78rem;color:var(--muted);white-space:nowrap;"></span>
+      </div>
+      <div style="margin-top:18px;">
+        <button onclick="toggleOverrides()" style="background:none;border:none;color:var(--accent);font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">&#9881; Adjust individual semester &amp; internship dates</button>
+        <div id="overridePanel" style="display:none;margin-top:14px;">
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Leave blank to use auto-calculated values.</p>
+          <div id="overrideGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;"></div>
+          <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+            <p style="font-size:0.75rem;font-weight:600;color:#5a3e8a;margin-bottom:10px;">&#127970; Internship Dates</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div>
+                <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Internship Start</label>
+                <input type="date" id="internStartInput" class="date-input-sm"/>
+              </div>
+              <div>
+                <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;">Internship End</label>
+                <input type="date" id="internEndInput" class="date-input-sm"/>
+              </div>
+            </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:6px;">Setting these overrides the auto-calculated 12-week internship block.</p>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:14px;">
+            <button onclick="saveOverrides()" style="padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">Save &amp; rebuild</button>
+            <button onclick="clearOverrides()" style="padding:9px 18px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--muted);">Clear all overrides</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div id="ugStats" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);text-align:center;">
+        <div style="padding:16px 10px;border-right:1px solid var(--border);">
+          <div id="statElapsed" style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--accent);">&#8212;</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">weeks elapsed</div>
+        </div>
+        <div style="padding:16px 10px;border-right:1px solid var(--border);">
+          <div id="statScored" style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--accent);">&#8212;</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">weeks scored</div>
+        </div>
+        <div style="padding:16px 10px;border-right:1px solid var(--border);">
+          <div id="statAvg" style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--accent);">&#8212;</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">average score</div>
+        </div>
+        <div style="padding:16px 10px;">
+          <div id="statRemaining" style="font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--accent);">&#8212;</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">weeks remaining</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:12px 20px;border-top:1px solid var(--border);flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--muted);"><div style="width:13px;height:13px;border-radius:3px;background:rgba(61,107,79,0.15);border:1px solid var(--border);"></div>Semester</div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--muted);"><div style="width:13px;height:13px;border-radius:3px;background:rgba(245,197,24,0.3);"></div>Holiday</div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--muted);"><div style="width:13px;height:13px;border-radius:3px;background:rgba(90,62,138,0.15);"></div>Internship</div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--muted);"><div style="width:13px;height:13px;border-radius:3px;background:var(--accent);"></div>This week</div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--muted);"><div style="width:13px;height:13px;border-radius:3px;outline:2px solid #c0392b;outline-offset:-2px;"></div>Exam week</div>
+        <div style="font-size:0.78rem;color:var(--muted);">&#8592; click any past week to score it</div>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div id="ugCalendar" style="margin-bottom:40px;"></div>
+
+    <!-- Empty state -->
+    <div id="ugEmpty" class="card" style="max-width:860px;text-align:center;padding:48px 40px;">
+      <p style="font-size:0.95rem;color:var(--muted);line-height:1.7;">Enter the first day of your UG above<br>and click <strong style="color:var(--text);">"Build my calendar"</strong></p>
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);font-size:0.82rem;color:var(--muted);font-style:italic;line-height:1.7;">
+        "The question is not whether you'll be distracted and lazy sometimes.<br>The question is whether you'll notice, and what you'll do next."
+        <span style="font-style:normal;font-size:0.75rem;margin-top:6px;display:block;">&#8212; adapted from Oliver Burkeman</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PG PAGE -->
+<div id="pgPage" class="page">
+  <div class="back-btn"><button onclick="showPage('mainPage')">&#8592; Back to Home</button></div>
+  <div class="sub-card">
+    <div class="sub-icon">&#128218;</div>
+    <h2>Postgraduate</h2>
+    <p>Map out your postgraduate path.</p>
+    <span class="coming-soon">Coming soon</span>
+  </div>
+</div>
+
+<!-- PhD PAGE -->
+<div id="phdPage" class="page">
+  <div class="back-btn"><button onclick="showPage('mainPage')">&#8592; Back to Home</button></div>
+  <div class="sub-card">
+    <div class="sub-icon">&#128300;</div>
+    <h2>PhD</h2>
+    <p>Track your doctoral journey.</p>
+    <span class="coming-soon">Coming soon</span>
+  </div>
+</div>
+
+<!-- PERSONAL PAGE -->
+<div id="personalPage" class="page">
+  <div class="back-btn"><button onclick="showPage('mainPage')">&#8592; Back to Home</button></div>
+  <div class="sub-card">
+    <div class="sub-icon">&#127807;</div>
+    <h2>Personal</h2>
+    <p>Set personal growth goals and life milestones.</p>
+    <span class="coming-soon">Coming soon</span>
+  </div>
+</div>
+
+<!-- SCORE MODAL -->
+<div id="scoreModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:36px 40px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+    <p style="font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:6px;">Week</p>
+    <h3 id="modalWeekLabel" style="font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:10px;"></h3>
+    <p style="font-size:0.85rem;color:var(--muted);line-height:1.5;margin-bottom:24px;">How productive and meaningful was this week?</p>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">
+      <button class="score-opt" onclick="setScore(1)">1<span style="display:block;font-size:0.6rem;color:var(--muted);margin-top:2px;">poor</span></button>
+      <button class="score-opt" onclick="setScore(2)">2<span style="display:block;font-size:0.6rem;color:var(--muted);margin-top:2px;">low</span></button>
+      <button class="score-opt" onclick="setScore(3)">3<span style="display:block;font-size:0.6rem;color:var(--muted);margin-top:2px;">okay</span></button>
+      <button class="score-opt" onclick="setScore(4)">4<span style="display:block;font-size:0.6rem;color:var(--muted);margin-top:2px;">good</span></button>
+      <button class="score-opt" onclick="setScore(5)">5<span style="display:block;font-size:0.6rem;color:var(--muted);margin-top:2px;">great</span></button>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:16px;text-align:left;">
+      <label style="font-size:0.75rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block;">&#128211; Notion Page Note</label>
+      <input type="text" id="notionNoteInput" placeholder="e.g. Week 3 Review, Exam prep..." maxlength="80"
+        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--bg);color:var(--text);outline:none;"/>
+      <p style="font-size:0.7rem;color:var(--muted);margin-top:6px;">Type a Notion page title or short note.</p>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#c0392b;">&#128221; Exam Week</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:3px;">Mark this as an exam period</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <span style="font-size:0.78rem;color:var(--muted);" id="examToggleLabel">Off</span>
+        <div id="examToggle" onclick="toggleExam()" style="width:42px;height:24px;border-radius:12px;background:#ddd;position:relative;cursor:pointer;transition:background 0.2s;" data-active="0">
+          <div id="examToggleKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);"></div>
+        </div>
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="saveModal()" style="padding:10px 22px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;font-weight:500;">Save</button>
+      <button onclick="clearScore()" style="padding:10px 18px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--muted);">Clear</button>
+      <button onclick="closeModal()" style="padding:10px 18px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--muted);">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyBgI0U3w0eVP8qm5zXq2y2e2xqT7Y5RFhc",
+  authDomain: "project-yourself-7d0c4.firebaseapp.com",
+  databaseURL: "https://project-yourself-7d0c4-default-rtdb.firebaseio.com",
+  projectId: "project-yourself-7d0c4",
+  storageBucket: "project-yourself-7d0c4.firebasestorage.app",
+  messagingSenderId: "34261772663",
+  appId: "1:34261772663:web:3956dc790750d173cb5972"
+});
+var db = firebase.database();
+
+function setSyncStatus(msg, color) {
+  var el = document.getElementById("syncStatus");
+  if (el) { el.textContent = msg; el.style.color = color || "var(--muted)"; }
+}
+function dbSave(path, val) {
+  setSyncStatus("Saving...", "#f0a500");
+  db.ref(path).set(val).then(function() {
+    setSyncStatus("Saved", "var(--accent)");
+    setTimeout(function() { setSyncStatus(""); }, 1500);
+  }).catch(function() { setSyncStatus("Save failed", "#c0392b"); });
+}
+
+// ---- Birthday ----
+document.getElementById("birthdayInput").max = new Date().toISOString().split("T")[0];
+document.getElementById("birthdayInput").addEventListener("change", function() {
+  var bday = new Date(this.value);
+  if (isNaN(bday)) return;
+  var now = new Date();
+  var y = now.getFullYear() - bday.getFullYear();
+  var mo = now.getMonth() - bday.getMonth();
+  var d = now.getDate() - bday.getDate();
+  if (d < 0) { mo--; d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+  if (mo < 0) { y--; mo += 12; }
+  var nb = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+  if (nb <= now) nb.setFullYear(now.getFullYear() + 1);
+  var dtn = Math.ceil((nb - now) / 86400000);
+  document.getElementById("ageDisplay").innerHTML =
+    "<div><div class='age-label'>Your Age</div><div class='age-value'>" + y + "</div></div>" +
+    "<div style='width:1px;background:var(--border);height:36px;'></div>" +
+    "<div><div class='age-label'>Months & Days</div>" +
+    "<div class='age-detail' style='font-size:0.88rem;color:var(--text)'>" + mo + " months, " + d + " days</div>" +
+    "<div class='age-detail'>Next birthday in " + dtn + " day" + (dtn !== 1 ? "s" : "") + "</div></div>";
+});
+
+// ---- Navigation ----
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(function(p) { p.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ---- UG Tracker ----
+var SEM_WEEKS = 18, TOTAL_SEMS = 9, INTERN_WEEKS = 12;
+var ugScores = {}, ugNotes = {}, ugOverrides = {}, ugHolidays = {}, ugExams = {};
+var semDates = [], activeKey = null;
+
+function addDays(dt, n) { var d = new Date(dt); d.setDate(d.getDate() + n); return d; }
+function sow(dt) { var d = new Date(dt); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d; }
+function toKey(d) { return d.toISOString().split("T")[0]; }
+function fmt(d) { return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }); }
+
+function loadData() {
+  setSyncStatus("Syncing...", "#f0a500");
+  db.ref("ug").once("value").then(function(snap) {
+    var data = snap.val() || {};
+    ugScores    = data.scores    || {};
+    ugNotes     = data.notes     || {};
+    ugOverrides = data.overrides || {};
+    ugHolidays  = data.holidays  || {};
+    ugExams     = data.exams     || {};
+    var sd = data.startDate;
+    if (sd) { document.getElementById("ugStartDate").value = sd; buildCalendar(); }
+    setSyncStatus("Synced", "var(--accent)");
+    setTimeout(function() { setSyncStatus(""); }, 2000);
+  }).catch(function() { setSyncStatus("Offline", "#c0392b"); });
+}
+
+function buildCalendar() {
+  var val = document.getElementById("ugStartDate").value;
+  if (!val) { alert("Please enter your UG start date."); return; }
+  dbSave("ug/startDate", val);
+  semDates = [];
+  var cur = new Date(val);
+  for (var s = 0; s < TOTAL_SEMS; s++) {
+    var ov = ugOverrides["sem" + (s + 1)];
+    var ss = ov ? new Date(ov) : new Date(cur);
+    semDates.push(ss);
+    var hc = ugHolidays["sem" + (s + 1)];
+    var hd = 0;
+    if (hc && hc !== "none" && hc.start && hc.end) {
+      hd = Math.max(0, Math.round((new Date(hc.end) - new Date(hc.start)) / 86400000) + 1);
+    } else if (!hc) { hd = 56; }
+    cur = addDays(ss, SEM_WEEKS * 7 + hd);
+  }
+  renderCalendar();
+  populateOverrides();
+}
+
+function holWeeks(key) {
+  var hc = ugHolidays[key];
+  if (!hc || hc === "none" || !hc.start || !hc.end) return [];
+  var ws = [], c = sow(new Date(hc.start)), e = new Date(hc.end);
+  while (c <= e) { ws.push(new Date(c)); c = addDays(c, 7); }
+  return ws;
+}
+
+function makeCell(type, lbl, wStart, score, note, exam, isCur, isPast) {
+  var key = toKey(sow(wStart));
+  var bg = isCur
+    ? (type === "internship" ? "#5a3e8a" : "var(--accent)")
+    : score ? ""
+    : type === "holiday" ? "rgba(245,197,24,0.25)"
+    : type === "internship" ? "rgba(90,62,138,0.12)"
+    : "rgba(61,107,79,0.1)";
+
+  var cell = document.createElement("div");
+  cell.className = "week-cell" +
+    (isPast || isCur ? " past" : "") +
+    (isCur ? " current" : "") +
+    (score ? " s" + score : "") +
+    (exam ? " exam-week" : "");
+  if (isCur) { cell.style.background = bg; cell.style.color = "#fff"; }
+  else if (!score) cell.style.background = bg;
+
+  var scoreHtml = score
+    ? "<div style='font-size:1rem;" + (isCur ? "color:#fff" : "") + "'>" + score + "</div>"
+    : isCur ? "<div style='font-size:0.6rem;color:rgba(255,255,255,0.8)'>Now</div>" : "";
+  var sub = !score && !isCur
+    ? (type === "holiday" ? "<div style='font-size:0.55rem;color:#b08000;opacity:0.8;'>holiday</div>"
+      : type === "internship" ? "<div style='font-size:0.55rem;color:#5a3e8a;opacity:0.8;'>intern</div>" : "")
+    : "";
+  var noteHtml = note
+    ? "<div style='font-size:0.55rem;background:rgba(0,0,0,0.08);border-radius:3px;padding:1px 4px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:" + (isCur ? "rgba(255,255,255,0.85)" : "var(--accent)") + ";'>&#128211; " + note + "</div>"
+    : "";
+
+  cell.innerHTML =
+    "<div style='font-weight:500;font-size:0.68rem;opacity:0.75;'>" + lbl + "</div>" +
+    "<div style='font-size:0.6rem;opacity:0.6;'>" + fmt(wStart) + "</div>" +
+    (score ? scoreHtml : (!isCur ? sub : scoreHtml)) + noteHtml;
+
+  if (isPast && !isCur) {
+    cell.onclick = (function(k, l, sc) {
+      return function() { openModal(k, l, sc); };
+    })(key, lbl, score);
+  }
+  return cell;
+}
+
+function renderCalendar() {
+  var cal = document.getElementById("ugCalendar");
+  cal.innerHTML = "";
+  document.getElementById("ugEmpty").style.display = "none";
+  document.getElementById("ugStats").style.display = "block";
+
+  var now = sow(new Date());
+  var elapsed = 0, scored = 0, scoreSum = 0, remaining = 0;
+
+  for (var si = 0; si < semDates.length; si++) {
+    var ss = semDates[si], sn = si + 1, sk = "sem" + sn;
+
+    // Semester label
+    var sh = document.createElement("div");
+    sh.className = "sem-label";
+    sh.textContent = "Semester " + sn;
+    cal.appendChild(sh);
+
+    // Semester weeks
+    var grid = document.createElement("div");
+    grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-bottom:8px;";
+    cal.appendChild(grid);
+    for (var w = 0; w < SEM_WEEKS; w++) {
+      var ws = addDays(ss, w * 7), k = toKey(sow(ws));
+      var ip = ws < now, ic = toKey(now) === toKey(sow(ws));
+      var sc = ugScores[k] || 0;
+      if (ip && !ic) { elapsed++; if (sc) { scored++; scoreSum += sc; } }
+      if (!ip && !ic) remaining++;
+      grid.appendChild(makeCell("sem", "Wk" + (w + 1), ws, sc, ugNotes[k] || "", !!ugExams[k], ic, ip));
+    }
+
+    // Holiday header
+    var hc = ugHolidays[sk], noHol = hc === "none";
+    var hsv = hc && hc.start ? hc.start : "", hev = hc && hc.end ? hc.end : "";
+    var hh = document.createElement("div");
+    hh.style.cssText = "display:flex;align-items:center;gap:10px;margin:14px 0 8px;flex-wrap:wrap;background:rgba(245,197,24,0.08);border-radius:10px;padding:10px 14px;border:1px solid rgba(245,197,24,0.25);";
+    hh.innerHTML =
+      "<span style='font-size:0.72rem;font-weight:600;color:#8a6800;'>&#127796; Holiday after Sem " + sn + "</span>" +
+      "<label style='display:flex;align-items:center;gap:5px;font-size:0.75rem;color:var(--muted);cursor:pointer;'>" +
+        "<input type='checkbox' class='nohol-cb' data-key='" + sk + "' " + (noHol ? "checked" : "") + " style='accent-color:var(--accent);cursor:pointer;'> No holiday" +
+      "</label>" +
+      (!noHol
+        ? "<span style='font-size:0.75rem;color:var(--muted);'>From</span>" +
+          "<input type='date' class='hol-input hol-date' data-key='" + sk + "' value='" + hsv + "'>" +
+          "<span style='font-size:0.75rem;color:var(--muted);'>To</span>" +
+          "<input type='date' class='hol-input hol-date' data-key='" + sk + "' value='" + hev + "'>" : "");
+    cal.appendChild(hh);
+
+    // Attach holiday listeners
+    var cb = hh.querySelector(".nohol-cb");
+    if (cb) cb.addEventListener("change", function() {
+      var key = this.dataset.key;
+      if (this.checked) ugHolidays[key] = "none"; else delete ugHolidays[key];
+      dbSave("ug/holidays", ugHolidays);
+      buildCalendar();
+    });
+    var dates = hh.querySelectorAll(".hol-date");
+    if (dates.length === 2) {
+      var holHandler = function() {
+        var key = dates[0].dataset.key;
+        if (dates[0].value && dates[1].value) {
+          ugHolidays[key] = { start: dates[0].value, end: dates[1].value };
+          dbSave("ug/holidays", ugHolidays);
+          buildCalendar();
+        }
+      };
+      dates[0].addEventListener("change", holHandler);
+      dates[1].addEventListener("change", holHandler);
+    }
+
+    if (noHol) {
+      var nm = document.createElement("div");
+      nm.style.cssText = "font-size:0.78rem;color:var(--muted);padding:4px 0 16px;font-style:italic;";
+      nm.textContent = "No holiday after Semester " + sn + ".";
+      cal.appendChild(nm);
+    } else {
+      var hw = holWeeks(sk);
+      if (hw.length > 0) {
+        var hg = document.createElement("div");
+        hg.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-bottom:16px;margin-top:8px;";
+        cal.appendChild(hg);
+        for (var hi = 0; hi < hw.length; hi++) {
+          var hs = hw[hi], hk = toKey(hs);
+          var hip = hs < now, hic = toKey(now) === toKey(hs);
+          var hsc = ugScores[hk] || 0;
+          if (hip && !hic) { elapsed++; if (hsc) { scored++; scoreSum += hsc; } }
+          if (!hip && !hic) remaining++;
+          hg.appendChild(makeCell("holiday", "H" + (hi + 1), hs, hsc, ugNotes[hk] || "", !!ugExams[hk], hic, hip));
+        }
+      } else {
+        var ht = document.createElement("div");
+        ht.style.cssText = "font-size:0.78rem;color:var(--muted);padding:6px 0 16px;font-style:italic;";
+        ht.textContent = "Set holiday dates above to display weeks.";
+        cal.appendChild(ht);
+      }
+    }
+  }
+
+  // Internship
+  var ih = document.createElement("div");
+  ih.className = "sem-label";
+  ih.style.cssText = "color:#5a3e8a;margin-top:24px;font-size:0.78rem;";
+  ih.textContent = "Internship";
+  cal.appendChild(ih);
+
+  var lastSem = semDates[TOTAL_SEMS - 1];
+  var lastHC  = ugHolidays["sem" + TOTAL_SEMS];
+  var iStart, iWeeks;
+
+  if (ugOverrides.internStart) {
+    iStart = new Date(ugOverrides.internStart);
+  } else if (lastHC && lastHC !== "none" && lastHC.end) {
+    iStart = addDays(new Date(lastHC.end), 1);
+  } else if (lastHC === "none") {
+    iStart = addDays(lastSem, SEM_WEEKS * 7);
+  } else {
+    iStart = addDays(lastSem, SEM_WEEKS * 7 + 56);
+  }
+
+  if (ugOverrides.internStart && ugOverrides.internEnd) {
+    iWeeks = Math.max(1, Math.ceil((new Date(ugOverrides.internEnd) - iStart) / 604800000));
+  } else {
+    iWeeks = INTERN_WEEKS;
+  }
+
+  var iInfo = document.createElement("div");
+  iInfo.style.cssText = "font-size:0.75rem;color:#5a3e8a;margin-bottom:10px;opacity:0.8;";
+  iInfo.textContent = fmt(iStart) + " \u2192 " + iWeeks + " weeks";
+  cal.appendChild(iInfo);
+
+  var ig = document.createElement("div");
+  ig.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-bottom:48px;";
+  cal.appendChild(ig);
+
+  for (var iw = 0; iw < iWeeks; iw++) {
+    var iwS = addDays(iStart, iw * 7), iwK = toKey(sow(iwS));
+    var iwP = iwS < now, iwC = toKey(now) === toKey(sow(iwS));
+    var iwSc = ugScores[iwK] || 0;
+    if (iwP && !iwC) { elapsed++; if (iwSc) { scored++; scoreSum += iwSc; } }
+    if (!iwP && !iwC) remaining++;
+    ig.appendChild(makeCell("internship", "IW" + (iw + 1), iwS, iwSc, ugNotes[iwK] || "", !!ugExams[iwK], iwC, iwP));
+  }
+
+  document.getElementById("statElapsed").textContent   = elapsed;
+  document.getElementById("statScored").textContent    = scored;
+  document.getElementById("statAvg").textContent       = scored > 0 ? (scoreSum / scored).toFixed(1) : "—";
+  document.getElementById("statRemaining").textContent = remaining;
+}
+
+function populateOverrides() {
+  var grid = document.getElementById("overrideGrid");
+  grid.innerHTML = "";
+  for (var s = 0; s < TOTAL_SEMS; s++) {
+    var key = "sem" + (s + 1);
+    var wrap = document.createElement("div");
+    wrap.innerHTML =
+      "<label style='font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px;'>Semester " + (s + 1) + " start</label>" +
+      "<input type='date' id='ov_" + key + "' class='date-input-sm' value='" + (ugOverrides[key] || "") + "'/>";
+    grid.appendChild(wrap);
+  }
+  var is = document.getElementById("internStartInput");
+  var ie = document.getElementById("internEndInput");
+  if (is) is.value = ugOverrides.internStart || "";
+  if (ie) ie.value = ugOverrides.internEnd   || "";
+}
+
+function toggleOverrides() {
+  var p = document.getElementById("overridePanel");
+  p.style.display = p.style.display === "none" ? "block" : "none";
+  populateOverrides();
+}
+
+function saveOverrides() {
+  ugOverrides = {};
+  for (var s = 0; s < TOTAL_SEMS; s++) {
+    var el = document.getElementById("ov_sem" + (s + 1));
+    if (el && el.value) ugOverrides["sem" + (s + 1)] = el.value;
+  }
+  var is = document.getElementById("internStartInput");
+  var ie = document.getElementById("internEndInput");
+  if (is && is.value) ugOverrides.internStart = is.value;
+  if (ie && ie.value) ugOverrides.internEnd   = ie.value;
+  dbSave("ug/overrides", ugOverrides);
+  buildCalendar();
+}
+
+function clearOverrides() {
+  ugOverrides = {};
+  dbSave("ug/overrides", {});
+  buildCalendar();
+}
+
+function toggleExam() {
+  var tog = document.getElementById("examToggle");
+  var knob = document.getElementById("examToggleKnob");
+  var lbl  = document.getElementById("examToggleLabel");
+  var on = tog.dataset.active === "1";
+  tog.dataset.active   = on ? "0" : "1";
+  tog.style.background = on ? "#ddd" : "#c0392b";
+  knob.style.left      = on ? "2px" : "20px";
+  lbl.textContent      = on ? "Off" : "On";
+}
+
+function openModal(key, label, sc) {
+  activeKey = key;
+  document.getElementById("modalWeekLabel").textContent = label;
+  document.querySelectorAll(".score-opt").forEach(function(b) {
+    b.classList.remove("selected");
+    if (sc && parseInt(b.textContent) === sc) b.classList.add("selected");
+  });
+  document.getElementById("notionNoteInput").value = ugNotes[key] || "";
+  var exam = !!ugExams[key];
+  var tog  = document.getElementById("examToggle");
+  var knob = document.getElementById("examToggleKnob");
+  var lbl  = document.getElementById("examToggleLabel");
+  tog.dataset.active   = exam ? "1" : "0";
+  tog.style.background = exam ? "#c0392b" : "#ddd";
+  knob.style.left      = exam ? "20px" : "2px";
+  lbl.textContent      = exam ? "On" : "Off";
+  document.getElementById("scoreModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("scoreModal").style.display = "none";
+  activeKey = null;
+}
+
+function setScore(n) {
+  document.querySelectorAll(".score-opt").forEach(function(b) { b.classList.remove("selected"); });
+  document.querySelectorAll(".score-opt").forEach(function(b) {
+    if (parseInt(b.textContent) === n) b.classList.add("selected");
+  });
+}
+
+function saveModal() {
+  if (!activeKey) return;
+  var sel = document.querySelector(".score-opt.selected");
+  if (sel) ugScores[activeKey] = parseInt(sel.textContent);
+  var note = document.getElementById("notionNoteInput").value.trim();
+  if (note) ugNotes[activeKey] = note; else delete ugNotes[activeKey];
+  if (document.getElementById("examToggle").dataset.active === "1") ugExams[activeKey] = true;
+  else delete ugExams[activeKey];
+  dbSave("ug/scores",  ugScores);
+  dbSave("ug/notes",   ugNotes);
+  dbSave("ug/exams",   ugExams);
+  closeModal();
+  renderCalendar();
+}
+
+function clearScore() {
+  if (!activeKey) return;
+  delete ugScores[activeKey]; delete ugNotes[activeKey]; delete ugExams[activeKey];
+  dbSave("ug/scores", ugScores);
+  dbSave("ug/notes",  ugNotes);
+  dbSave("ug/exams",  ugExams);
+  closeModal(); renderCalendar();
+}
+
+document.getElementById("scoreModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Expose to global for onclick attributes
+window.showPage       = showPage;
+window.buildCalendar  = buildCalendar;
+window.toggleOverrides= toggleOverrides;
+window.saveOverrides  = saveOverrides;
+window.clearOverrides = clearOverrides;
+window.toggleExam     = toggleExam;
+window.openModal      = openModal;
+window.closeModal     = closeModal;
+window.setScore       = setScore;
+window.saveModal      = saveModal;
+window.clearScore     = clearScore;
+
+// Init
+loadData();
+</script>
+</body>
+</html>
